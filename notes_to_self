@@ -1,0 +1,19 @@
+define description + specifications + design(draw) an interface so you can execute your idea. 
+
+add into the daily log.
+
+
+entry widgets cleared... delete meathod you can apply. eg entry e1.delete(0), end after user entered info .
+
+.focus (what puts the cursor back into the entry widget.) e1.focus()
+
+button_something
+
+entry_something so if you wnat something you just command focus
+
+doc string IN the function not above interacts
+
+def foo():
+    """ blah blah. """ -) every meathod every function and at the very top of the code at the very start.
+
+    if you have something important use hash symbol. 
