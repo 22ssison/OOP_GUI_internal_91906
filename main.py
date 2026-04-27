@@ -2,20 +2,25 @@
 NCEA Level 3 Chemistry Quiz: Properties of Organic Compounds
 ------------------------------------------------------------
 An interactive GUI application developed using Tkinter and OOP principles.
-This program evaluates knowledge of organic functional groups and reactions 
+This program evaluates knowledge of organic functional groups and reactions 9
 through a dynamic multiple-choice interface.
 """
 
 
 class Question:
-    def __init__(self, txt, options, ans_index, marks):
+    """"""
+    def __init__(self, text, options, ans_index, marks):
+        """"""
         self.text = text # question
         self.options = options # different options in list
         self.ans_index = ans_index # index of correct answer
         self.marks = marks # how many marks the question is worth
 
 class OrgQuiz:
+    """"""
     def __init__(self, parent):
+        """"""
+        self.parent = parent
         self.questions = [ 
             Question("What is the correct IUPAC name for: CH3CH=CHCH3?", ["but-1-ene", "but-2-ene", "2-butene", "propene", "1-butene"], 1, 1),
             Question("Which functional group is present in 3-chloropentane?", ["Alcohol", "Amine", "Alkene", "Haloalkane", "Ketone"], 3, 1),
@@ -69,4 +74,50 @@ class OrgQuiz:
             Question("Effect of increasing IMF strength on boiling point:", ["Weaker leads to higher", "Stronger leads to lower", "Stronger needs more energy; higher BP", "No effect", "Depends on size only"], 2, 2)
         ]
 
-        self.question_choice = St
+        # Initial (default) statuses
+        self.score = 0 
+        self.q_index = 0
+
+        # Start Screen
+        self.start_frame = Frame(parent)
+        self.start_frame.grid(row=0, column=0)
+
+        # Title + Instructions
+        Label(self.start_frame, text="NCEA Level 3 Organic Chemistry").grid()
+        self.instruction_label = Label(self.start_frame, text="Welcome! This quiz covers functional groups, isomerism, and organic reactions.50 questions available. Select your desired quiz length below. Note: Questions vary between 1 and 2 marks each.").grid()
+        
+        Label(self.start_frame, text="Num of Questions:").grid(row=0, column=0, padx=10, pady=5)
+        self.num_qs_entry = Entry(self.start_frame)
+        self.num_qs_entry.grid(row=0, column=1, padx=10, pady=5)
+
+        self.start_button = Button(self.start_frame, text="Start Quiz", command=validate_start.previous)
+
+        # Quiz Screen
+        def.quiz_frame =
+
+
+
+
+"""Notes"""
+
+    def show_all_frames(self): # Switch to Display (Frame 2)
+        """ Frame Switching"""
+        self.input_frame.grid_forget() # forget previous frame
+        self.display_frame.grid(row=0, column=0, padx=10, pady=5) 
+
+        if len(self.people) > 0: # checks how many objects (if any) in the list
+            self.index=0 # first to display is first obj position in people list
+            self.update_display()
+
+        else: # if list is empty.
+            self.label_display.config(text="No data stored.")
+ 
+    def to_start_screen(self): # Switch to Input (Frame 1)
+        self.display_frame.grid_forget() # forget previous frame
+        self.input_frame.grid(row=0, column=0, padx=10, pady=5) # call other frame
+
+    def to_quiz_screen(self): # Switch to Input (Frame 1)
+        self.display_frame.grid_forget() # forget previous frame
+        self.input_frame.grid(row=0, column=0, padx=10, pady=5) # call other frame
+
+    
