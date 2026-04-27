@@ -6,6 +6,9 @@ This program evaluates knowledge of organic functional groups and reactions 9
 through a dynamic multiple-choice interface.
 """
 
+from tkinter import *
+from tkinter import messagebox
+
 
 class Question:
     """"""
@@ -139,11 +142,23 @@ class OrgQuiz:
 
         self.quit_btn = Button(self.quiz_frame, text="Exit", width=15, command=self.root.quit)
         self.quit_btn.pack(side=RIGHT, padx=10, pady=20)
+        
+    def validate_start(self):
+        try:
+            num = int(self.num_qs_entry.get())
+            if 1 <= num <= len(self.questions):
+                self.total_qs_to_answer = num
+                self.start_frame.grid_forget()
+                self.quiz_frame.grid(row=0, column=0)
+                self.update_quiz_ui() # Show the first question
+            else:
+                messagebox.showwarning("Error", "Please enter between 1 and 50.")
+        except ValueError:
+            messagebox.showwarning("Error", "Please enter a valid number.")
 
 
 
 """Notes"""
-
     def to_start_screen(self): # Switch to Input (Frame 1)
         self.display_frame.grid_forget() # forget previous frame
         self.input_frame.grid(row=0, column=0, padx=10, pady=5) # call other frame
