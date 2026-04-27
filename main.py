@@ -76,9 +76,12 @@ class OrgQuiz:
 
         # Initial (default) statuses
         self.score = 0 
-        self.q_index = 0
+        self.q_index = 0 
+        self.total_qs_to_answer = 0  # will be set by the entry box
+        self.user_choice = IntVar()  # track which rb clicked
+        self.user_choice.set(-1)     # since 0 is 1st value in radiobutton, use -1 and start w/ nothing selected.
 
-        # Start Screen
+        # 1) Start Screen
         self.start_frame = Frame(parent)
         self.start_frame.grid(row=0, column=0)
 
@@ -92,26 +95,55 @@ class OrgQuiz:
 
         self.start_button = Button(self.start_frame, text="Start Quiz", command=validate_start.previous)
 
-        # Quiz Screen
-        def.quiz_frame =
+        # 2) Quiz Screen
+        self.quiz_frame = Frame(parent)
+        # don't .grid() yet; validate_start will do that.
 
+        # Question text
+        self.question_label = Label(self.quiz_frame, text="", font=("Arial", 12), wraplength=400)
+        self.question_label.pack(pady=10)
+
+        # Radio Buttons - creates list of 5 ans
+        self.rb_list = []
+        for i in range(5):
+            rb = Radiobutton(self.quiz_frame, text="", variable=self.user_choice, value=i) # follows index of each ans
+            rb.pack(anchor=W) # vertically + west side of screen 
+            self.rb_list.append(rb)
+
+        # Control Buttons
+        self.next_button = Button(self.quiz_frame, text="Next Question", command=self.next_q)
+        self.next_button.pack(side=LEFT, padx=10)
+
+        self.skip_button = Button(self.quiz_frame, text="Skip", command=self.skip_q)
+        self.skip_button.pack(side=LEFT, padx=10)
+        
+        self.reset_button = Button(self.quiz_frame, text="Reset Quiz", command=self.reset_quiz)
+        self.reset_button.pack(side=LEFT, padx=10)
+
+        # 3) Results Screen
+        self.results_frame = Frame(parent)
+        # don't .grid() yet; validate_results will do that.
+
+        # Title
+        self.results_label = Label(self.quiz_frame, text="Quiz Completed!", font=("Arial", 24, "bold"), fg="#2C3E50"
+        )
+        self.results_label.pack(pady=20)
+
+        # Score display - placeholder for score atm
+        self.score_label = Label(self.quiz_frame, text="Your Score: --/--", font=("Arial", 18))
+        self.score_label.pack(pady=10)
+
+        # restart/quit
+        self.restart_btn = Button(self.quiz_frame, text="Try Again", width=15)
+        self.restart_btn.pack(side=LEFT, padx=10, pady=20)
+
+        self.quit_btn = Button(self.quiz_frame, text="Exit", width=15, command=self.root.quit)
+        self.quit_btn.pack(side=RIGHT, padx=10, pady=20)
 
 
 
 """Notes"""
 
-    def show_all_frames(self): # Switch to Display (Frame 2)
-        """ Frame Switching"""
-        self.input_frame.grid_forget() # forget previous frame
-        self.display_frame.grid(row=0, column=0, padx=10, pady=5) 
-
-        if len(self.people) > 0: # checks how many objects (if any) in the list
-            self.index=0 # first to display is first obj position in people list
-            self.update_display()
-
-        else: # if list is empty.
-            self.label_display.config(text="No data stored.")
- 
     def to_start_screen(self): # Switch to Input (Frame 1)
         self.display_frame.grid_forget() # forget previous frame
         self.input_frame.grid(row=0, column=0, padx=10, pady=5) # call other frame
