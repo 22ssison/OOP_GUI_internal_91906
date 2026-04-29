@@ -146,7 +146,7 @@ class OrgQuiz:
         try:
             num = int(self.num_qs_entry.get()) 
             if 1 <= num <= len(self.questions): # if num is sensible
-                self.total_qs_to_answer = num
+                self.total_qs_to_answer = num 
                 self.start_frame.grid_forget()
                 self.quiz_frame.grid(row=0, column=0)
                 self.update_quiz() # Show the first question
@@ -168,3 +168,22 @@ class OrgQuiz:
             self.rb_list[i].config(text=current_q.options[i]) # update text shown for each rb
             # current_q.options list of 5 possible answers
     
+    def next_q(self):
+        choice = self.user_choice.get() 
+        
+        if choice == -1:
+            messagebox.showwarning("No Selection. Please select an answer before moving on.")
+            return # Stop the function here so they have to pick something
+
+        # add score to selected ans to current q
+        current_q = self.questions[self.q_index] # gets the object in the q list.
+        if choice == current_q.ans_index: # compares index selected to correct ans
+            self.score += current_q.marks # add score
+        
+        # move to next q
+        self.q_index += 1
+        
+        if self.q_index < self.total_qs_to_answer: # checks if still qs to ans - based on user's desired length of quiz
+            self.update_quiz()
+        else:
+            self.show_results()
