@@ -9,7 +9,6 @@ through a dynamic multiple-choice interface.
 from tkinter import *
 from tkinter import messagebox
 
-
 class Question:
     """"""
     def __init__(self, text, options, ans_index, marks):
@@ -127,7 +126,6 @@ class OrgQuiz:
         self.results_frame = Frame(parent)
         # don't .grid() yet; validate_results will do that.
 
-        # Title
         self.results_label = Label(self.quiz_frame, text="Quiz Completed!", font=("Arial", 24, "bold"), fg="#2C3E50"
         )
         self.results_label.pack(pady=20)
@@ -144,27 +142,29 @@ class OrgQuiz:
         self.quit_btn.pack(side=RIGHT, padx=10, pady=20)
         
     def validate_start(self):
+        """validates a valid # of questions before allowing quiz to begin."""
         try:
-            num = int(self.num_qs_entry.get())
-            if 1 <= num <= len(self.questions):
+            num = int(self.num_qs_entry.get()) 
+            if 1 <= num <= len(self.questions): # if num is sensible
                 self.total_qs_to_answer = num
                 self.start_frame.grid_forget()
                 self.quiz_frame.grid(row=0, column=0)
-                self.update_quiz_ui() # Show the first question
+                self.update_quiz() # Show the first question
             else:
                 messagebox.showwarning("Error", "Please enter between 1 and 50.")
         except ValueError:
             messagebox.showwarning("Error", "Please enter a valid number.")
+    
+    def update_quiz(self):
+        self.user_choice.set(-1) # rb nothing selected
 
+        current_q = self.questions[self.q_index] # get first element - object - in q list
 
-
-"""Notes"""
-    def to_start_screen(self): # Switch to Input (Frame 1)
-        self.display_frame.grid_forget() # forget previous frame
-        self.input_frame.grid(row=0, column=0, padx=10, pady=5) # call other frame
-
-    def to_quiz_screen(self): # Switch to Input (Frame 1)
-        self.display_frame.grid_forget() # forget previous frame
-        self.input_frame.grid(row=0, column=0, padx=10, pady=5) # call other frame
-
+        self.question_label.config(
+            text=f"Question {self.q_index + 1} of {self.total_qs_to_answer}\n\n{current_q.text}"
+        )
+        
+        for i in range(5): 
+            self.rb_list[i].config(text=current_q.options[i]) # update text shown for each rb
+            # current_q.options list of 5 possible answers
     
