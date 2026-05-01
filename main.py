@@ -78,8 +78,8 @@ class OrgQuiz:
 
         # Initial (default) statuses
         self.score = 0 
-        self.q_index = 0 
-        self.total_qs_to_answer = 0  # will be set by the entry box
+        self.question_index = 0 
+        self.total_questions_to_answer = 0  # will be set by the user at entry
         self.user_choice = IntVar()  # track which rb clicked
         self.user_choice.set(-1)     # since 0 is 1st value in radiobutton, use -1 and start w/ nothing selected.
 
@@ -92,8 +92,8 @@ class OrgQuiz:
         self.instruction_label = Label(self.start_frame, text="Welcome! This quiz covers functional groups, isomerism, and organic reactions.50 questions available. Select your desired quiz length below. Note: Questions vary between 1 and 2 marks each.").grid()
         
         Label(self.start_frame, text="Num of Questions:").grid(row=0, column=0, padx=10, pady=5)
-        self.num_qs_entry = Entry(self.start_frame)
-        self.num_qs_entry.grid(row=0, column=1, padx=10, pady=5)
+        self.num_questions_entry = Entry(self.start_frame)
+        self.num_questions_entry.grid(row=0, column=1, padx=10, pady=5)
 
         self.start_button = Button(self.start_frame, text="Start Quiz", command=validate_start.previous)
 
@@ -113,10 +113,10 @@ class OrgQuiz:
             self.rb_list.append(rb)
 
         # Control Buttons
-        self.next_button = Button(self.quiz_frame, text="Next Question", command=self.next_q)
+        self.next_button = Button(self.quiz_frame, text="Next Question", command=self.next_question)
         self.next_button.pack(side=LEFT, padx=10)
 
-        self.skip_button = Button(self.quiz_frame, text="Skip", command=self.skip_q)
+        self.skip_button = Button(self.quiz_frame, text="Skip", command=self.skip_question)
         self.skip_button.pack(side=LEFT, padx=10)
         
         self.reset_button = Button(self.quiz_frame, text="Reset Quiz", command=self.reset_quiz)
@@ -144,9 +144,9 @@ class OrgQuiz:
     def validate_start(self):
         """validates a valid # of questions before allowing quiz to begin."""
         try:
-            num = int(self.num_qs_entry.get()) 
-            if 1 <= num <= len(self.questions): # if num is sensible
-                self.total_qs_to_answer = num 
+            num = int(self.num_questions_entry.get()) 
+            if 1 <= num <= len(self.questions): # if num is sensible based on length of list
+                self.total_questions_to_answer = num 
                 self.start_frame.grid_forget()
                 self.quiz_frame.grid(row=0, column=0)
                 self.update_quiz() # Show the first question
@@ -156,19 +156,19 @@ class OrgQuiz:
             messagebox.showwarning("Error", "Please enter a valid number.")
     
     def update_quiz(self):
-        self.user_choice.set(-1) # rb nothing selected
+        self.user_choice.set(x-1) # rb nothing selected
 
-        current_q = self.questions[self.q_index] # get first element - object - in q list
+        current_question = self.questions[self.question_index] # get first element - object - in q list
 
         self.question_label.config(
-            text=f"Question {self.q_index + 1} of {self.total_qs_to_answer}\n\n{current_q.text}"
+            text=f"Question {self.question_index + 1} of {self.total_questions_to_answer}\n\n{current_queston.text}"
         )
         
         for i in range(5): 
-            self.rb_list[i].config(text=current_q.options[i]) # update text shown for each rb
-            # current_q.options list of 5 possible answers
+            self.rb_list[i].config(text=current_question.options[i]) # update text shown for each rb
+            # current_question.options list of 5 possible answers
     
-    def next_q(self):
+    def next_question(self):
         choice = self.user_choice.get() 
         
         if choice == -1:
@@ -176,14 +176,51 @@ class OrgQuiz:
             return # Stop the function here so they have to pick something
 
         # add score to selected ans to current q
-        current_q = self.questions[self.q_index] # gets the object in the q list.
-        if choice == current_q.ans_index: # compares index selected to correct ans
-            self.score += current_q.marks # add score
+        current_question = self.questions[self.question_index] # gets the object in the q list.
+        if choice == current_question.ans_index: # compares index selected to correct ans
+            self.score += current_question.marks # add score
         
         # move to next q
-        self.q_index += 1
+        self.question_index += 1
         
-        if self.q_index < self.total_qs_to_answer: # checks if still qs to ans - based on user's desired length of quiz
+        if self.question_index < self.total_questions_to_answer: # checks if still qs to ans - based on user's desired length of quiz
             self.update_quiz()
         else:
             self.show_results()
+
+        def show_results(self):
+            self.quiz_frame.grid_forget()
+            self.results_frame.grid(row=0, column=0)
+            
+            # Calc max possible score for questions answered based on user's desired length of quiz. Also consider different questions are worth different points. 
+            max_score = sum(question.marks for question in self.questions[:self.total_questions_to_answer])
+            
+            # Percentage Score
+            percentage = (self.score / max_score) * 100
+            
+            # update labels
+            self.results_label.config(text="Quiz Completed!")
+            self.score_label.config(
+                text=f"Score: {self.score} / {max_score}\nPercentage: {round(percentage)}%"
+        )
+
+        def show_results(self):
+            self.quiz_frame.grid_forget()
+            self.results_frame.grid(row=0, column=0)
+            
+            max_score = 0
+            
+            # get specific list of questions user actually answered
+            played_questions = self.questions[:self.total_qs_to_answer]
+            
+            # add all specific question marks
+            for question in played_questions:
+                max_score += question.marks
+                
+            # Percentage
+            percentage = (self.score / max_score) * 100
+            
+            self.results_label.config(text="Quiz Completed!")
+            self.score_label.config(
+                text=f"Score: {self.score} / {max_score}\nPercentage: {round(percentage)}%"
+            )
