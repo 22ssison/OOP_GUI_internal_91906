@@ -91,11 +91,12 @@ class OrgQuiz:
         Label(self.start_frame, text="NCEA Level 3 Organic Chemistry").grid()
         self.instruction_label = Label(self.start_frame, text="Welcome! This quiz covers functional groups, isomerism, and organic reactions. 50 questions available. Select your desired quiz length below. Note: Questions vary between 1 and 2 marks each.").grid()
         
-        Label(self.start_frame, text="Num of Questions:").grid(row=0, column=0, padx=10, pady=5)
+        Label(self.start_frame, text="Num of Questions:").grid()
         self.num_questions_entry = Entry(self.start_frame)
-        self.num_questions_entry.grid(row=0, column=1, padx=10, pady=5)
+        self.num_questions_entry.grid()
 
         self.start_button = Button(self.start_frame, text="Start Quiz", command=self.validate_start)
+        self.start_button.grid()
 
         # 2) Quiz Screen
         self.quiz_frame = Frame(parent)
@@ -116,9 +117,8 @@ class OrgQuiz:
         self.next_button = Button(self.quiz_frame, text="Next Question", command=self.next_question)
         self.next_button.pack(side=LEFT, padx=10)
 
-        # # skip_question not yet defined.
-        # self.skip_button = Button(self.quiz_frame, text="Skip", command=self.skip_question)
-        # self.skip_button.pack(side=LEFT, padx=10)
+        self.skip_button = Button(self.quiz_frame, text="Skip", command=self.skip_question)
+        self.skip_button.pack(side=LEFT, padx=10)
         
         # # reset_quiz not yet defined. 
         # self.reset_button = Button(self.quiz_frame, text="Reset Quiz", command=self.reset_quiz)
@@ -128,20 +128,20 @@ class OrgQuiz:
         self.results_frame = Frame(parent)
         # don't .grid() yet; validate_results will do that.
 
-        self.results_label = Label(self.quiz_frame, text="Quiz Completed!", font=("Arial", 24, "bold"), fg="#2C3E50"
+        self.results_label = Label(self.results_frame, text="Quiz Completed!", font=("Arial", 24, "bold"), fg="#2C3E50"
         )
         self.results_label.pack(pady=20)
 
         # Score display - placeholder for score atm
-        self.score_label = Label(self.quiz_frame, text="Your Score: --/--", font=("Arial", 18))
+        self.score_label = Label(self.results_frame, text="Your Score: --/--", font=("Arial", 18))
         self.score_label.pack(pady=10)
 
         # restart/quit
-        self.restart_btn = Button(self.quiz_frame, text="Try Again", width=15)
+        self.restart_btn = Button(self.results_frame, text="Try Again", width=15)
         self.restart_btn.pack(side=LEFT, padx=10, pady=20)
 
         # add command=self.root.quit - doesnt work atm, probably problem with main func. 
-        self.quit_btn = Button(self.quiz_frame, text="Exit", width=15,)
+        self.quit_btn = Button(self.results_frame, text="Exit", width=15,)
         self.quit_btn.pack(side=RIGHT, padx=10, pady=20)
         
     def validate_start(self):
@@ -164,7 +164,7 @@ class OrgQuiz:
         current_question = self.questions[self.question_index] # get first element - object - in q list
 
         self.question_label.config(
-            text=f"Question {self.question_index + 1} of {self.total_questions_to_answer}\n\n{current_queston.text}"
+            text=f"Question {self.question_index + 1} of {self.total_questions_to_answer}\n\n{current_question.text}"
         )
         
         for i in range(5): 
@@ -182,6 +182,28 @@ class OrgQuiz:
         current_question = self.questions[self.question_index] # gets the object in the q list.
         if choice == current_question.ans_index: # compares index selected to correct ans
             self.score += current_question.marks # add score
+            
+        # move to next q
+        self.question_index += 1
+        
+        if self.question_index < self.total_questions_to_answer: # check if still qs to ans
+            self.update_quiz()
+        else:
+            self.show_results()
+        
+    def skip_question(self):
+        if messagebox.askyesno("Skip", "Are you sure you want to skip? No marks will be awarded."):
+            self.question_index += 1
+            if self.question_index < self.total_questions_to_answer:
+                self.update_quiz()
+            else:
+                self.show_results()
+        # if clicked no, func ends and remains on same q.
+                
+        # add score to selected ans to current q
+        current_question = self.questions[self.question_index] # gets the object in the q list.
+        if choice == current_question.ans_index: # compares index selected to correct ans
+            self.score += current_question.marks # add score
         
         # move to next q
         self.question_index += 1
@@ -190,49 +212,28 @@ class OrgQuiz:
             self.update_quiz()
         else:
             self.show_results()
-        
-    # def skip_question(self):
 
     # def reset_quiz(self):
 
-
-        def show_results(self):
-            self.quiz_frame.grid_forget()
-            self.results_frame.grid(row=0, column=0)
-            
-            # Calc max possible score for questions answered based on user's desired length of quiz. Also consider different questions are worth different points. 
-            max_score = sum(question.marks for question in self.questions[:self.total_questions_to_answer])
-            
-            # Percentage Score
-            percentage = (self.score / max_score) * 100
-            
-            # update labels
-            self.results_label.config(text="Quiz Completed!")
-            self.score_label.config(
-                text=f"Score: {self.score} / {max_score}\nPercentage: {round(percentage)}%"
-        )
-
-        def show_results(self):
-            self.quiz_frame.grid_forget()
-            self.results_frame.grid(row=0, column=0)
-            
-            max_score = 0
-            
-            # get specific list of questions user actually answered
-            played_questions = self.questions[:self.total_qs_to_answer]
-            
-            # add all specific question marks
-            for question in played_questions:
-                max_score += question.marks
-                
-            # Percentage
-            percentage = (self.score / max_score) * 100
-
-            self.results_label.config(text="Quiz Completed!")
-            self.score_label.config(
-                text=f"Score: {self.score} / {max_score}\nPercentage: {round(percentage)}%"
-            )
-
+    def show_results(self):
+        self.quiz_frame.grid_forget()
+        self.results_frame.grid(row=0, column=0)
+    
+        max_score = 0
+        
+        # get specific list of questions user actually answered
+        played_questions = self.questions[:self.total_qs_to_answer]
+        
+        # add all specific question marks
+        for question in played_questions:
+            max_score += question.marks
+        
+        # Percentage Score
+        percentage = (self.score / max_score) * 100
+        
+        # update labels
+        self.results_label.config(text="Quiz Completed!")
+        self.score_label.config(text=f"Score: {self.score} / {max_score}\nPercentage: {round(percentage)}%")
 
 if __name__ == "__main__":
     root = Tk()
@@ -246,3 +247,4 @@ if __name__ == "__main__":
 # check
 # not yet defined. 
 # create actual radio buttons. 
+# add
