@@ -89,13 +89,13 @@ class OrgQuiz:
 
         # Title + Instructions
         Label(self.start_frame, text="NCEA Level 3 Organic Chemistry").grid()
-        self.instruction_label = Label(self.start_frame, text="Welcome! This quiz covers functional groups, isomerism, and organic reactions.50 questions available. Select your desired quiz length below. Note: Questions vary between 1 and 2 marks each.").grid()
+        self.instruction_label = Label(self.start_frame, text="Welcome! This quiz covers functional groups, isomerism, and organic reactions. 50 questions available. Select your desired quiz length below. Note: Questions vary between 1 and 2 marks each.").grid()
         
         Label(self.start_frame, text="Num of Questions:").grid(row=0, column=0, padx=10, pady=5)
         self.num_questions_entry = Entry(self.start_frame)
         self.num_questions_entry.grid(row=0, column=1, padx=10, pady=5)
 
-        self.start_button = Button(self.start_frame, text="Start Quiz", command=validate_start.previous)
+        self.start_button = Button(self.start_frame, text="Start Quiz", command=self.validate_start)
 
         # 2) Quiz Screen
         self.quiz_frame = Frame(parent)
@@ -116,11 +116,13 @@ class OrgQuiz:
         self.next_button = Button(self.quiz_frame, text="Next Question", command=self.next_question)
         self.next_button.pack(side=LEFT, padx=10)
 
-        self.skip_button = Button(self.quiz_frame, text="Skip", command=self.skip_question)
-        self.skip_button.pack(side=LEFT, padx=10)
+        # # skip_question not yet defined.
+        # self.skip_button = Button(self.quiz_frame, text="Skip", command=self.skip_question)
+        # self.skip_button.pack(side=LEFT, padx=10)
         
-        self.reset_button = Button(self.quiz_frame, text="Reset Quiz", command=self.reset_quiz)
-        self.reset_button.pack(side=LEFT, padx=10)
+        # # reset_quiz not yet defined. 
+        # self.reset_button = Button(self.quiz_frame, text="Reset Quiz", command=self.reset_quiz)
+        # self.reset_button.pack(side=LEFT, padx=10)
 
         # 3) Results Screen
         self.results_frame = Frame(parent)
@@ -138,7 +140,8 @@ class OrgQuiz:
         self.restart_btn = Button(self.quiz_frame, text="Try Again", width=15)
         self.restart_btn.pack(side=LEFT, padx=10, pady=20)
 
-        self.quit_btn = Button(self.quiz_frame, text="Exit", width=15, command=self.root.quit)
+        # add command=self.root.quit - doesnt work atm, probably problem with main func. 
+        self.quit_btn = Button(self.quiz_frame, text="Exit", width=15,)
         self.quit_btn.pack(side=RIGHT, padx=10, pady=20)
         
     def validate_start(self):
@@ -187,6 +190,11 @@ class OrgQuiz:
             self.update_quiz()
         else:
             self.show_results()
+        
+    # def skip_question(self):
+
+    # def reset_quiz(self):
+
 
         def show_results(self):
             self.quiz_frame.grid_forget()
@@ -219,8 +227,22 @@ class OrgQuiz:
                 
             # Percentage
             percentage = (self.score / max_score) * 100
-            
+
             self.results_label.config(text="Quiz Completed!")
             self.score_label.config(
                 text=f"Score: {self.score} / {max_score}\nPercentage: {round(percentage)}%"
             )
+
+
+if __name__ == "__main__":
+    root = Tk()
+    root.title("Orgamic Chemistry Quiz")
+    app = OrgQuiz(root)
+    root.mainloop()
+
+
+# Prompts to go back to to change in code. 
+# add
+# check
+# not yet defined. 
+# create actual radio buttons. 
