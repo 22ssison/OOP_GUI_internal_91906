@@ -90,8 +90,9 @@ class OrgQuiz:
 
         # Title + Instructions
         Label(self.start_frame, text="NCEA Level 3 Organic Chemistry").grid()
-        self.instruction_label = Label(self.start_frame, text="Welcome! This quiz covers functional groups, isomerism, and organic reactions. 50 questions available. Select your desired quiz length below. Note: Questions vary between 1 and 2 marks each.").grid()
-        
+        self.instruction_label = Label(self.start_frame, text="Welcome! This quiz covers functional groups, isomerism, and organic reactions. 50 questions available. Select your desired quiz length below. Note: Questions vary between 1 and 2 marks each.")
+        self.instruction_label.grid()
+
         Label(self.start_frame, text="Num of Questions:").grid()
         self.num_questions_entry = Entry(self.start_frame)
         self.num_questions_entry.grid()
@@ -101,7 +102,7 @@ class OrgQuiz:
 
         # 2) Quiz Screen
         self.quiz_frame = Frame(parent)
-        # don't .grid() yet; validate_start will do that.
+        # don't .grid() yet validate_start will do that.
 
         # Question text
         self.question_label = Label(self.quiz_frame, text="", font=("Arial", 12), wraplength=400)
@@ -203,6 +204,9 @@ class OrgQuiz:
 
         self.num_questions_entry.delete(0, END) # delete all from pos 0-END
         self.question_label.config(text="")
+        
+        self.results_label.config(text="Quiz Completed!")
+        self.score_label.config(text="Your Score: --/--")
 
         for rb in self.rb_list:
             rb.config(text="") # make all ans option disappear
@@ -215,10 +219,10 @@ class OrgQuiz:
         if messagebox.askyesno("Skip", "Are you sure you want to skip? No marks will be awarded."):
             self.question_index += 1
 
-        if self.question_index < self.total_questions_to_answer:
-            self.update_quiz()
-        else:
-            self.show_results()
+            if self.question_index < self.total_questions_to_answer:
+                self.update_quiz()
+            else:
+                self.show_results()
 
     def show_results(self):
         self.quiz_frame.grid_forget()
@@ -227,10 +231,7 @@ class OrgQuiz:
         max_score = 0
         
         # get specific list of questions user actually answered
-        played_questions = self.selected_questions
-        
-        # add all specific question marks
-        for question in played_questions:
+        for question in self.selected_questions:
             max_score += question.marks
         
         # Percentage Score
