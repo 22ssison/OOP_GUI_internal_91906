@@ -119,10 +119,6 @@ class OrgQuiz:
 
         self.skip_button = Button(self.quiz_frame, text="Skip", command=self.skip_question)
         self.skip_button.pack(side=LEFT, padx=10)
-        
-        # # reset_quiz not yet defined. 
-        # self.reset_button = Button(self.quiz_frame, text="Reset Quiz", command=self.reset_quiz)
-        # self.reset_button.pack(side=LEFT, padx=10)
 
         # 3) Results Screen
         self.results_frame = Frame(parent)
@@ -137,11 +133,10 @@ class OrgQuiz:
         self.score_label.pack(pady=10)
 
         # restart/quit
-        self.restart_btn = Button(self.results_frame, text="Try Again", width=15)
+        self.restart_btn = Button(self.results_frame, text="Try Again", width=15, command=self.reset_quiz)
         self.restart_btn.pack(side=LEFT, padx=10, pady=20)
 
-        # add command=self.root.quit - doesnt work atm, probably problem with main func. 
-        self.quit_btn = Button(self.results_frame, text="Exit", width=15,)
+        self.quit_btn = Button(self.results_frame, text="Exit", width=15, command=self.confirm_exit)
         self.quit_btn.pack(side=RIGHT, padx=10, pady=20)
         
     def validate_start(self):
@@ -190,7 +185,24 @@ class OrgQuiz:
             self.update_quiz()
         else:
             self.show_results()
-        
+
+    def reset_quiz(self):
+        self.score = 0
+        self.question_index = 0
+        self.total_questions_to_answer = 0
+        self.user_choice.set(-1)
+
+        self.results_frame.grid_forget()
+        self.quiz_frame.grid_forget()
+        self.start_frame.grid(row=0, column=0)
+
+        self.num_questions_entry.delete(0, END) # delete all from pos 0-END
+        self.question_label.config(text="")
+    
+    def confirm_exit(self):
+        if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
+            self.parent.destroy()
+
     def skip_question(self):
         if messagebox.askyesno("Skip", "Are you sure you want to skip? No marks will be awarded."):
             self.question_index += 1
