@@ -8,6 +8,7 @@ through a dynamic multiple-choice interface.
 
 from tkinter import *
 from tkinter import messagebox
+import random
 
 class Question:
     """"""
@@ -138,16 +139,20 @@ class OrgQuiz:
 
         self.quit_btn = Button(self.results_frame, text="Exit", width=15, command=self.confirm_exit)
         self.quit_btn.pack(side=RIGHT, padx=10, pady=20)
+
+        self.selected_questions = []
         
     def validate_start(self):
         """validates a valid # of questions before allowing quiz to begin."""
         try:
             num = int(self.num_questions_entry.get()) 
             if 1 <= num <= len(self.questions): # if num is sensible based on length of list
-                self.total_questions_to_answer = num 
+                self.total_questions_to_answer = num
+                # shuffle + get random q
+                self.selected_questions = random.sample(self.questions, num)
                 self.start_frame.grid_forget()
                 self.quiz_frame.grid(row=0, column=0)
-                self.update_quiz() # Show the first question
+                self.update_quiz()# Show the first question
             else:
                 messagebox.showwarning("Error", "Please enter between 1 and 50.")
         except ValueError:
@@ -156,7 +161,7 @@ class OrgQuiz:
     def update_quiz(self):
         self.user_choice.set(-1) # rb nothing selected
 
-        current_question = self.questions[self.question_index] # get first element - object - in q list
+        current_question = self.selected_questions[self.question_index] # get first element - object - in q list
 
         self.question_label.config(
             text=f"Question {self.question_index + 1} of {self.total_questions_to_answer}\n\n{current_question.text}"
@@ -174,7 +179,7 @@ class OrgQuiz:
             return # Stop the function here so they have to pick something
 
         # add score to selected ans to current q
-        current_question = self.questions[self.question_index] # gets the object in the q list.
+        current_question = self.selected_questions[self.question_index] # gets the object in the q list.
         if choice == current_question.ans_index: # compares index selected to correct ans
             self.score += current_question.marks # add score
             
@@ -198,6 +203,9 @@ class OrgQuiz:
 
         self.num_questions_entry.delete(0, END) # delete all from pos 0-END
         self.question_label.config(text="")
+
+        for rb in self.rb_list:
+            rb.config(text="") # make all ans option disappear
     
     def confirm_exit(self):
         if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
@@ -219,7 +227,7 @@ class OrgQuiz:
         max_score = 0
         
         # get specific list of questions user actually answered
-        played_questions = self.questions[:self.total_questions_to_answer]
+        played_questions = self.selected_questions
         
         # add all specific question marks
         for question in played_questions:
@@ -240,11 +248,3 @@ if __name__ == "__main__":
     root.title("Organic Chemistry Quiz")
     app = OrgQuiz(root)
     root.mainloop()
-
-
-# Prompts to go back to to change in code. 
-# add
-# check
-# not yet defined. 
-# create actual radio buttons. 
-# add
