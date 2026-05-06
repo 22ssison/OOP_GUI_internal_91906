@@ -159,7 +159,7 @@ class OrgQuiz:
             messagebox.showwarning("Error", "Please enter a valid number.")
     
     def update_quiz(self):
-        self.user_choice.set(x-1) # rb nothing selected
+        self.user_choice.set(-1) # rb nothing selected
 
         current_question = self.questions[self.question_index] # get first element - object - in q list
 
@@ -194,26 +194,11 @@ class OrgQuiz:
     def skip_question(self):
         if messagebox.askyesno("Skip", "Are you sure you want to skip? No marks will be awarded."):
             self.question_index += 1
-            if self.question_index < self.total_questions_to_answer:
-                self.update_quiz()
-            else:
-                self.show_results()
-        # if clicked no, func ends and remains on same q.
-                
-        # add score to selected ans to current q
-        current_question = self.questions[self.question_index] # gets the object in the q list.
-        if choice == current_question.ans_index: # compares index selected to correct ans
-            self.score += current_question.marks # add score
-        
-        # move to next q
-        self.question_index += 1
-        
-        if self.question_index < self.total_questions_to_answer: # checks if still qs to ans - based on user's desired length of quiz
+
+        if self.question_index < self.total_questions_to_answer:
             self.update_quiz()
         else:
             self.show_results()
-
-    # def reset_quiz(self):
 
     def show_results(self):
         self.quiz_frame.grid_forget()
@@ -222,14 +207,17 @@ class OrgQuiz:
         max_score = 0
         
         # get specific list of questions user actually answered
-        played_questions = self.questions[:self.total_qs_to_answer]
+        played_questions = self.questions[:self.total_questions_to_answer]
         
         # add all specific question marks
         for question in played_questions:
             max_score += question.marks
         
         # Percentage Score
-        percentage = (self.score / max_score) * 100
+        if max_score > 0:
+            percentage = (self.score / max_score) * 100
+        else:
+            percentage = 0 # not possible in this program but just incase we change it in the future, avoid program from crashing.
         
         # update labels
         self.results_label.config(text="Quiz Completed!")
@@ -237,7 +225,7 @@ class OrgQuiz:
 
 if __name__ == "__main__":
     root = Tk()
-    root.title("Orgamic Chemistry Quiz")
+    root.title("Organic Chemistry Quiz")
     app = OrgQuiz(root)
     root.mainloop()
 
