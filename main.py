@@ -1,8 +1,8 @@
 """
-NCEA Level 3 Chemistry Quiz: Properties of Organic Compounds
+NCEA Level 3 Chemistry Quiz: Properties of Organic Compounds.
 ------------------------------------------------------------
 An interactive GUI application developed using Tkinter and OOP principles.
-This program evaluates knowledge of organic functional groups and reactions 9
+This program evaluates knowledge of organic functional groups and reactions
 through a dynamic multiple-choice interface.
 """
 
@@ -10,21 +10,25 @@ from tkinter import *
 from tkinter import messagebox
 import random
 
+
 class Question:
-    """"""
+    """Represents a quiz question with its options, answer, and mark value."""
+
     def __init__(self, text, options, ans_index, marks):
-        """"""
-        self.text = text # question
-        self.options = options # different options in list
-        self.ans_index = ans_index # index of correct answer
-        self.marks = marks # how many marks the question is worth
+        """Initialize the question with text, options list, and answer index."""
+        self.text = text  # The question prompt.
+        self.options = options  # List of 5 possible answers.
+        self.ans_index = ans_index  # The index of the correct answer.
+        self.marks = marks  # Marks awarded for a correct answer.
+
 
 class OrgQuiz:
-    """"""
+    """The main application class for the Organic Chemistry Quiz."""
+
     def __init__(self, parent):
-        """"""
+        """Initialize the GUI and define the database of 50 questions."""
         self.parent = parent
-        self.questions = [ 
+        self.questions = [
             Question("What is the correct IUPAC name for: CH3CH=CHCH3?", ["but-1-ene", "but-2-ene", "2-butene", "propene", "1-butene"], 1, 1),
             Question("Which functional group is present in 3-chloropentane?", ["Alcohol", "Amine", "Alkene", "Haloalkane", "Ketone"], 3, 1),
             Question("What is the IUPAC name for CH3CH2NH2?", ["Methanamine", "Ethanamine", "Propanamine", "Methylamine", "Aminoethane"], 1, 1),
@@ -77,120 +81,138 @@ class OrgQuiz:
             Question("Effect of increasing IMF strength on boiling point:", ["Weaker leads to higher", "Stronger leads to lower", "Stronger needs more energy; higher BP", "No effect", "Depends on size only"], 2, 2)
         ]
 
-        # Initial (default) statuses
+        # Tracking status variables.
         self.score = 0 
         self.question_index = 0 
-        self.total_questions_to_answer = 0  # will be set by the user at entry
-        self.user_choice = IntVar()  # track which rb clicked
-        self.user_choice.set(-1)     # since 0 is 1st value in radiobutton, use -1 and start w/ nothing selected.
+        self.total_questions_to_answer = 0
+        self.user_choice = IntVar() 
+        self.user_choice.set(-1)
 
-        # 1) Start Screen
+        # 1) Start Screen Setup.
         self.start_frame = Frame(parent)
         self.start_frame.grid(row=0, column=0)
 
-        # Title + Instructions
         Label(self.start_frame, text="NCEA Level 3 Organic Chemistry").grid()
-        self.instruction_label = Label(self.start_frame, text="Welcome! This quiz covers functional groups, isomerism, and organic reactions. 50 questions available. Select your desired quiz length below. Note: Questions vary between 1 and 2 marks each.")
+        self.instruction_label = Label(
+            self.start_frame, 
+            text="Welcome! Covers functional groups, isomerism, and reactions.",
+            wraplength=400
+        )
         self.instruction_label.grid()
 
         Label(self.start_frame, text="Num of Questions:").grid()
         self.num_questions_entry = Entry(self.start_frame)
         self.num_questions_entry.grid()
 
-        self.start_button = Button(self.start_frame, text="Start Quiz", command=self.validate_start)
+        self.start_button = Button(
+            self.start_frame, text="Start Quiz", command=self.validate_start
+        )
         self.start_button.grid()
 
-        # 2) Quiz Screen
+        # 2) Quiz Screen Setup.
         self.quiz_frame = Frame(parent)
-        # don't .grid() yet validate_start will do that.
 
-        # Question text
-        self.question_label = Label(self.quiz_frame, text="", font=("Arial", 12), wraplength=400)
+        self.question_label = Label(
+            self.quiz_frame, text="", font=("Arial", 12), wraplength=400
+        )
         self.question_label.pack(pady=10)
 
-        # Radio Buttons - creates list of 5 ans
         self.rb_list = []
         for i in range(5):
-            rb = Radiobutton(self.quiz_frame, text="", variable=self.user_choice, value=i) # follows index of each ans
-            rb.pack(anchor=W) # vertically + west side of screen 
+            rb = Radiobutton(
+                self.quiz_frame, text="", variable=self.user_choice, value=i
+            )
+            rb.pack(anchor=W)
             self.rb_list.append(rb)
 
-        # Control Buttons
-        self.next_button = Button(self.quiz_frame, text="Next Question", command=self.next_question)
-        self.next_button.pack(side=LEFT, padx=10)
+        self.next_button = Button(
+            self.quiz_frame, text="Next Question", command=self.next_question
+        )
+        self.next_button.pack(side=LEFT, padx=10, pady=10)
 
-        self.skip_button = Button(self.quiz_frame, text="Skip", command=self.skip_question)
-        self.skip_button.pack(side=LEFT, padx=10)
+        self.skip_button = Button(
+            self.quiz_frame, text="Skip", command=self.skip_question
+        )
+        self.skip_button.pack(side=LEFT, padx=10, pady=10)
 
-        # 3) Results Screen
+        # 3) Results Screen Setup.
         self.results_frame = Frame(parent)
-        # don't .grid() yet; validate_results will do that.
 
-        self.results_label = Label(self.results_frame, text="Quiz Completed!", font=("Arial", 24, "bold"), fg="#2C3E50")
+        self.results_label = Label(
+            self.results_frame, text="Quiz Completed!", 
+            font=("Arial", 24, "bold"), fg="#2C3E50"
+        )
         self.results_label.pack(pady=20)
 
-        self.score_label = Label(self.results_frame, text="Your Score: --/--", font=("Arial", 18))
+        self.score_label = Label(
+            self.results_frame, text="Your Score: --/--", font=("Arial", 18)
+        )
         self.score_label.pack(pady=10)
 
-        # restart/quit
-        self.restart_btn = Button(self.results_frame, text="Try Again", width=15, command=self.reset_quiz)
+        self.restart_btn = Button(
+            self.results_frame, text="Try Again", width=15, command=self.reset_quiz
+        )
         self.restart_btn.pack(side=LEFT, padx=10, pady=20)
 
-        self.quit_btn = Button(self.results_frame, text="Exit", width=15, command=self.confirm_exit)
+        self.quit_btn = Button(
+            self.results_frame, text="Exit", width=15, command=self.confirm_exit
+        )
         self.quit_btn.pack(side=RIGHT, padx=10, pady=20)
 
         self.selected_questions = []
         
     def validate_start(self):
-        """validates a valid # of questions before allowing quiz to begin."""
+        """Validate input count and transition to the quiz screen."""
         try:
             num = int(self.num_questions_entry.get()) 
-            if 1 <= num <= len(self.questions): # if num is sensible based on length of list
+            if 1 <= num <= len(self.questions):
                 self.total_questions_to_answer = num
-                # shuffle + get random q
                 self.selected_questions = random.sample(self.questions, num)
                 self.start_frame.grid_forget()
                 self.quiz_frame.grid(row=0, column=0)
-                self.update_quiz()# Show the first question
+                self.update_quiz()
             else:
                 messagebox.showwarning("Error", "Please enter between 1 and 50.")
         except ValueError:
             messagebox.showwarning("Error", "Please enter a valid number.")
     
     def update_quiz(self):
+        """Update the quiz frame with the current question data."""
         self.user_choice.set(-1)
-
-        current_question = self.selected_questions[self.question_index] # get first element - object - in q list
+        current_question = self.selected_questions[self.question_index]
 
         self.question_label.config(
-            text=f"Question {self.question_index + 1} of {self.total_questions_to_answer}\n\n{current_question.text}"
+            text=f"Question {self.question_index + 1} of "
+                 f"{self.total_questions_to_answer}\n\n{current_question.text}"
         )
         
-        # current_question.options list of 5 possible answers
         for i, option in enumerate(current_question.options):
             if i < len(self.rb_list):
                 self.rb_list[i].config(text=option)
 
     def next_question(self):
+        """Process the user's answer and move to the next question."""
         choice = self.user_choice.get()
         
         if choice == -1:
-            messagebox.showwarning("No Selection", "Please choose an answer before moving on.")
-            return # Stop the function here so they have to pick something
+            messagebox.showwarning(
+                "No Selection", "Please choose an answer first."
+            )
+            return
 
-        # add score to selected ans to current q
-        current_question = self.selected_questions[self.question_index]# gets the object in the q list.
-        if choice == current_question.ans_index: # compares index selected to correct ans
-            self.score += current_question.marks # add score
+        current_question = self.selected_questions[self.question_index]
+        if choice == current_question.ans_index:
+            self.score += current_question.marks
             
-        self.question_index += 1 # move to next q
+        self.question_index += 1
         
-        if self.question_index < self.total_questions_to_answer: # check if still qs to ans
+        if self.question_index < self.total_questions_to_answer:
             self.update_quiz()
         else:
             self.show_results()
 
     def reset_quiz(self):
+        """Wipe scores and return the user to the start screen."""
         self.score = 0
         self.question_index = 0
         self.total_questions_to_answer = 0
@@ -200,51 +222,38 @@ class OrgQuiz:
         self.quiz_frame.grid_forget()
         self.start_frame.grid(row=0, column=0)
 
-        self.num_questions_entry.delete(0, END) # delete all from pos 0-END
-        self.question_label.config(text="")
-        
-        self.results_label.config(text="Quiz Completed!")
-        self.score_label.config(text="Your Score: --/--")
-
-        for rb in self.rb_list:
-            rb.config(text="") # make all ans option disappear
+        self.num_questions_entry.delete(0, END)
     
     def confirm_exit(self):
+        """Close the program after user confirmation."""
         if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
             self.parent.destroy()
 
     def skip_question(self):
-        if messagebox.askyesno("Skip", "Are you sure you want to skip? No marks will be awarded."):
-
+        """Move to next question without awarding marks."""
+        if messagebox.askyesno("Skip", "Skip? No marks will be awarded."):
             self.question_index += 1
-
             if self.question_index >= self.total_questions_to_answer:
                 self.show_results()
             else:
                 self.update_quiz()
 
     def show_results(self):
+        """Display the final summary and calculate percentage."""
         self.quiz_frame.grid_forget()
         self.results_frame.grid(row=0, column=0)
     
-        max_score = 0
+        max_possible = sum(q.marks for q in self.selected_questions)
+        percentage = (self.score / max_possible * 100) if max_possible > 0 else 0
         
-        # get specific list of questions user actually answered
-        for question in self.selected_questions:
-            max_score += question.marks
-        
-        # Percentage Score
-        if max_score > 0:
-            percentage = (self.score / max_score) * 100
-        else:
-            percentage = 0 # not possible in this program but just incase we change it in the future, avoid program from crashing.
-        
-        # update labels
-        self.results_label.config(text="Quiz Completed!")
-        self.score_label.config(text=f"Score: {self.score} / {max_score}\nPercentage: {round(percentage)}%")
+        self.score_label.config(
+            text=f"Score: {self.score} / {max_possible}\n"
+                 f"Percentage: {round(percentage)}%"
+        )
+
 
 if __name__ == "__main__":
     root = Tk()
     root.title("Organic Chemistry Quiz")
     app = OrgQuiz(root)
-    root.mainloop() 
+    root.mainloop()
