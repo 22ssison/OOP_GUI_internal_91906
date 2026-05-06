@@ -126,11 +126,9 @@ class OrgQuiz:
         self.results_frame = Frame(parent)
         # don't .grid() yet; validate_results will do that.
 
-        self.results_label = Label(self.results_frame, text="Quiz Completed!", font=("Arial", 24, "bold"), fg="#2C3E50"
-        )
+        self.results_label = Label(self.results_frame, text="Quiz Completed!", font=("Arial", 24, "bold"), fg="#2C3E50")
         self.results_label.pack(pady=20)
 
-        # Score display - placeholder for score atm
         self.score_label = Label(self.results_frame, text="Your Score: --/--", font=("Arial", 18))
         self.score_label.pack(pady=10)
 
@@ -160,7 +158,7 @@ class OrgQuiz:
             messagebox.showwarning("Error", "Please enter a valid number.")
     
     def update_quiz(self):
-        self.user_choice.set(-1) # rb nothing selected
+        self.user_choice.set(-1)
 
         current_question = self.selected_questions[self.question_index] # get first element - object - in q list
 
@@ -168,24 +166,24 @@ class OrgQuiz:
             text=f"Question {self.question_index + 1} of {self.total_questions_to_answer}\n\n{current_question.text}"
         )
         
-        for i in range(5): 
-            self.rb_list[i].config(text=current_question.options[i]) # update text shown for each rb
-            # current_question.options list of 5 possible answers
-    
+        # current_question.options list of 5 possible answers
+        for i, option in enumerate(current_question.options):
+            if i < len(self.rb_list):
+                self.rb_list[i].config(text=option)
+
     def next_question(self):
-        choice = self.user_choice.get() 
+        choice = self.user_choice.get()
         
         if choice == -1:
-            messagebox.showwarning("No Selection. Please select an answer before moving on.")
+            messagebox.showwarning("No Selection", "Please choose an answer before moving on.")
             return # Stop the function here so they have to pick something
 
         # add score to selected ans to current q
-        current_question = self.selected_questions[self.question_index] # gets the object in the q list.
+        current_question = self.selected_questions[self.question_index]# gets the object in the q list.
         if choice == current_question.ans_index: # compares index selected to correct ans
             self.score += current_question.marks # add score
             
-        # move to next q
-        self.question_index += 1
+        self.question_index += 1 # move to next q
         
         if self.question_index < self.total_questions_to_answer: # check if still qs to ans
             self.update_quiz()
@@ -217,12 +215,13 @@ class OrgQuiz:
 
     def skip_question(self):
         if messagebox.askyesno("Skip", "Are you sure you want to skip? No marks will be awarded."):
+
             self.question_index += 1
 
-            if self.question_index < self.total_questions_to_answer:
-                self.update_quiz()
-            else:
+            if self.question_index >= self.total_questions_to_answer:
                 self.show_results()
+            else:
+                self.update_quiz()
 
     def show_results(self):
         self.quiz_frame.grid_forget()
@@ -248,4 +247,4 @@ if __name__ == "__main__":
     root = Tk()
     root.title("Organic Chemistry Quiz")
     app = OrgQuiz(root)
-    root.mainloop()
+    root.mainloop() 
