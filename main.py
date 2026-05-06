@@ -1,3 +1,11 @@
+"""
+NCEA Level 3 Chemistry Quiz: Properties of Organic Compounds
+------------------------------------------------------------
+An interactive GUI application developed using Tkinter and OOP principles.
+This program evaluates knowledge of organic functional groups and reactions 9
+through a dynamic multiple-choice interface.
+"""
+
 from tkinter import *
 from tkinter import messagebox
 import random
@@ -261,7 +269,7 @@ class OrgQuiz:
         max_possible = sum(q.marks for q in self.selected_questions)
         percentage = (self.score / max_possible * 100) if max_possible > 0 else 0
         
-        # Correctly displays the number of questions answered out of the total selected
+        # UI  Correctly displays the number of questions answered out of the total selected
         self.score_label.config(
             text=f"Total Marks: {self.score} / {max_possible}\n"
                  f"Questions Answered: {self.total_questions_to_answer}\n"
