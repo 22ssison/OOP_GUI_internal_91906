@@ -95,7 +95,7 @@ class OrgQuiz:
         Label(self.start_frame, text="NCEA Level 3 Organic Chemistry").grid()
         self.instruction_label = Label(
             self.start_frame, 
-            text="Welcome! Covers functional groups, isomerism, and reactions.",
+            text="Welcome! This quiz covers functional groups, isomerism, and reactions.",
             wraplength=400
         )
         self.instruction_label.grid()
