@@ -1,11 +1,3 @@
-"""
-NCEA Level 3 Chemistry Quiz: Properties of Organic Compounds.
-------------------------------------------------------------
-An interactive GUI application developed using Tkinter and OOP principles.
-This program evaluates knowledge of organic functional groups and reactions
-through a dynamic multiple-choice interface.
-"""
-
 from tkinter import *
 from tkinter import messagebox
 import random
@@ -28,6 +20,11 @@ class OrgQuiz:
     def __init__(self, parent):
         """Initialize the GUI and define the database of 50 questions."""
         self.parent = parent
+        
+        # UI
+        self.parent.grid_columnconfigure(0, weight=1)
+        self.parent.grid_rowconfigure(0, weight=1)
+
         self.questions = [
             Question("What is the correct IUPAC name for: CH3CH=CHCH3?", ["but-1-ene", "but-2-ene", "2-butene", "propene", "1-butene"], 1, 1),
             Question("Which functional group is present in 3-chloropentane?", ["Alcohol", "Amine", "Alkene", "Haloalkane", "Ketone"], 3, 1),
@@ -90,24 +87,36 @@ class OrgQuiz:
 
         # 1) Start Screen Setup.
         self.start_frame = Frame(parent)
-        self.start_frame.grid(row=0, column=0)
+        self.start_frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20) # Added sticky
 
-        Label(self.start_frame, text="NCEA Level 3 Organic Chemistry").grid()
+        Label(self.start_frame, text="NCEA Level 3 Organic Chemistry", font=("Arial", 16, "bold")).grid(pady=10)
         self.instruction_label = Label(
             self.start_frame, 
             text="Welcome! This quiz covers functional groups, isomerism, and reactions.",
             wraplength=400
         )
-        self.instruction_label.grid()
+        self.instruction_label.grid(pady=10)
 
-        Label(self.start_frame, text="Num of Questions:").grid()
-        self.num_questions_entry = Entry(self.start_frame)
-        self.num_questions_entry.grid()
+        Label(
+            self.start_frame,
+            text="Num of Questions:",
+            font=("Arial", 12)
+        ).grid(pady=5)
+
+        self.num_questions_entry = Entry(
+            self.start_frame,
+            font=("Arial", 14),
+            width=10,
+            justify="center",
+            bd=3,
+            relief="solid"
+        )
+        self.num_questions_entry.grid(pady=10)
 
         self.start_button = Button(
-            self.start_frame, text="Start Quiz", command=self.validate_start
+            self.start_frame, text="Start Quiz", command=self.validate_start, height=2, width=15
         )
-        self.start_button.grid()
+        self.start_button.grid(pady=20)
 
         # 2) Quiz Screen Setup.
         self.quiz_frame = Frame(parent)
@@ -115,25 +124,28 @@ class OrgQuiz:
         self.question_label = Label(
             self.quiz_frame, text="", font=("Arial", 12), wraplength=400
         )
-        self.question_label.pack(pady=10)
+        self.question_label.pack(pady=20)
 
         self.rb_list = []
         for i in range(5):
             rb = Radiobutton(
-                self.quiz_frame, text="", variable=self.user_choice, value=i
+                self.quiz_frame, text="", variable=self.user_choice, value=i, font=("Arial", 10)
             )
-            rb.pack(anchor=W)
+            rb.pack(anchor=W, padx=50, pady=2)
             self.rb_list.append(rb)
 
+        self.btn_container = Frame(self.quiz_frame) # Added container for buttons
+        self.btn_container.pack(pady=20)
+
         self.next_button = Button(
-            self.quiz_frame, text="Next Question", command=self.next_question
+            self.btn_container, text="Next Question", command=self.next_question
         )
-        self.next_button.pack(side=LEFT, padx=10, pady=10)
+        self.next_button.pack(side=LEFT, padx=10)
 
         self.skip_button = Button(
-            self.quiz_frame, text="Skip", command=self.skip_question
+            self.btn_container, text="Skip", command=self.skip_question
         )
-        self.skip_button.pack(side=LEFT, padx=10, pady=10)
+        self.skip_button.pack(side=LEFT, padx=10)
 
         # 3) Results Screen Setup.
         self.results_frame = Frame(parent)
@@ -149,15 +161,18 @@ class OrgQuiz:
         )
         self.score_label.pack(pady=10)
 
+        self.res_btn_container = Frame(self.results_frame)
+        self.res_btn_container.pack(pady=20)
+
         self.restart_btn = Button(
-            self.results_frame, text="Try Again", width=15, command=self.reset_quiz
+            self.res_btn_container, text="Try Again", width=15, command=self.reset_quiz
         )
-        self.restart_btn.pack(side=LEFT, padx=10, pady=20)
+        self.restart_btn.pack(side=LEFT, padx=10)
 
         self.quit_btn = Button(
-            self.results_frame, text="Exit", width=15, command=self.confirm_exit
+            self.res_btn_container, text="Exit", width=15, command=self.confirm_exit
         )
-        self.quit_btn.pack(side=RIGHT, padx=10, pady=20)
+        self.quit_btn.pack(side=LEFT, padx=10)
 
         self.selected_questions = []
         
@@ -169,7 +184,7 @@ class OrgQuiz:
                 self.total_questions_to_answer = num
                 self.selected_questions = random.sample(self.questions, num)
                 self.start_frame.grid_forget()
-                self.quiz_frame.grid(row=0, column=0)
+                self.quiz_frame.grid(row=0, column=0, sticky="nsew") # Added sticky
                 self.update_quiz()
             else:
                 messagebox.showwarning("Error", "Please enter between 1 and 50.")
@@ -220,7 +235,7 @@ class OrgQuiz:
 
         self.results_frame.grid_forget()
         self.quiz_frame.grid_forget()
-        self.start_frame.grid(row=0, column=0)
+        self.start_frame.grid(row=0, column=0, sticky="nsew") # Added sticky
 
         self.num_questions_entry.delete(0, END)
     
@@ -241,7 +256,7 @@ class OrgQuiz:
     def show_results(self):
         """Display the final summary and calculate percentage."""
         self.quiz_frame.grid_forget()
-        self.results_frame.grid(row=0, column=0)
+        self.results_frame.grid(row=0, column=0, sticky="nsew") # Added sticky
     
         max_possible = sum(q.marks for q in self.selected_questions)
         percentage = (self.score / max_possible * 100) if max_possible > 0 else 0
@@ -255,5 +270,7 @@ class OrgQuiz:
 if __name__ == "__main__":
     root = Tk()
     root.title("Organic Chemistry Quiz")
+    # Set a minimum window size so it doesn't collapse to nothing
+    root.minsize(450, 400) 
     app = OrgQuiz(root)
     root.mainloop()
